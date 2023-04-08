@@ -28,7 +28,7 @@ function Section(props) {
         {section.rows.map((row, rowIndex) => (
           <div key={rowIndex}>
             <label>
-              Stitches:
+              Row {rowIndex + 1}: 
               <input
                 type="text"
                 value={row.stitches}

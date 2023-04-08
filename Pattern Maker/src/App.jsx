@@ -36,11 +36,12 @@ function CrochetPatternGenerator() {
     setEditingRow({ section: sectionIndex, row: rowIndex });
   };
 
-  const handleRowInputChange = (event, sectionIndex, rowIndex) => {
-    const newSections = [...sections];
-    newSections[sectionIndex].rows[rowIndex].stitches = event.target.value;
-    setSections(newSections);
-  };
+ const handleRowInputChange = (event, sectionIndex, rowIndex) => {
+  const newSections = [...sections];
+  newSections[sectionIndex].rows[rowIndex].stitches = event.target.value;
+  setSections(newSections);
+};
+
 
   const handleSaveRowClick = () => {
     const newSections = [...sections];
@@ -67,25 +68,35 @@ function CrochetPatternGenerator() {
     setSections(newSections);
   };
 
-  // Generate the output JSON by mapping over the sections and rows.
-  const outputJson = JSON.stringify({
-    sections: sections.map(({ title, rows }) => ({
-      title,
-      rows: rows.map(({ stitches }) => {
-        const stitchArray = [];
-        const splitStitches = stitches.split(",");
-        splitStitches.forEach((stitch) => {
-          const splitStitch = stitch.split("*");
-          const stitchType = splitStitch[0];
-          const stitchCount = parseInt(splitStitch[1], 10);
-          for (let i = 0; i < stitchCount; i++) {
-            stitchArray.push(stitchType);
-          }
-        });
-        return { stitches: stitchArray };
-      }),
-    })),
-  });
+
+  const outputJson = JSON.stringify(
+    {
+      sections: sections.map(({ title, rows }) => ({
+        title,
+        rows: rows.map(({ stitches }) => {
+          const stitchArray = [];
+          const splitStitches = stitches.split(",");
+          splitStitches.forEach((stitch) => {
+            const splitStitch = stitch.split("*");
+            const stitchType = splitStitch[0];
+            const stitchCount = parseInt(splitStitch[1], 10);
+            for (let i = 0; i < stitchCount; i++) {
+              stitchArray.push({ name: stitchType, value: 1, complete: false });
+            }
+          });
+          return stitchArray;
+        }),
+      })),
+    },
+    null,
+    2
+  );
+  
+  
+
+  const outputFormatted = outputJson.replace(/},/g, "},\n").replace(/],/g, "],\n");
+
+
   
 
   return (
@@ -108,7 +119,7 @@ function CrochetPatternGenerator() {
       <button onClick={handleAddSectionClick}>Add Section</button>
       <div style={{ marginTop: "20px" }}>
         <h2>Output JSON Preview:</h2>
-        <pre>{outputJson}</pre>
+        <textarea style={{ width: "100%", height: "200px" }} value={outputFormatted} readOnly />
       </div>
     </div>
   );
