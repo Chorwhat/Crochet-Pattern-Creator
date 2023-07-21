@@ -43,21 +43,23 @@ function CrochetPatternGenerator() {
 };
 
 
-  const handleSaveRowClick = () => {
-    const newSections = [...sections];
-    const { section: sectionIndex, row: rowIndex } = editingRow;
-    const row = newSections[sectionIndex].rows[rowIndex];
-  
-    // Split the stitches string into an array
-    const splitStitches = Array.isArray(row.stitches) ? row.stitches.join(",") : row.stitches;
 
-  
-    // Replace the stitches string with the new array
-    row.stitches = splitStitches;
-  
-    setSections(newSections);
-    setEditingRow(null);
-  };
+
+const handleSaveRowClick = () => {
+  const newSections = [...sections];
+  const { section: sectionIndex, row: rowIndex } = editingRow;
+  const row = newSections[sectionIndex].rows[rowIndex];
+
+  // Split the stitches string into an array
+  const splitStitches = Array.isArray(row.stitches) ? row.stitches.join(",") : row.stitches;
+
+
+  // Replace the stitches string with the new array
+  row.stitches = splitStitches;
+
+  setSections(newSections);
+  setEditingRow(null);
+};
   
   
   
@@ -69,6 +71,8 @@ function CrochetPatternGenerator() {
   };
 
 
+
+
   const outputJson = JSON.stringify(
     {
       sections: sections.map(({ title, rows }) => ({
@@ -76,12 +80,27 @@ function CrochetPatternGenerator() {
         rows: rows.map(({ stitches }) => {
           const stitchArray = [];
           const splitStitches = stitches.split(",");
+  
           splitStitches.forEach((stitch) => {
             const splitStitch = stitch.split("*");
             const stitchType = splitStitch[0];
-            const stitchCount = parseInt(splitStitch[1], 10);
+            let stitchCount = 1; // Default to 1 if no stitch count is provided
+            let instruction = "";
+  
+            if (splitStitch.length > 1) {
+              // Check for presence of instruction in square brackets
+              const instructionStart = splitStitch[1].indexOf("[");
+              if (instructionStart !== -1) {
+                stitchCount = parseInt(splitStitch[1].substring(0, instructionStart), 10);
+                const instructionEnd = splitStitch[1].indexOf("]");
+                instruction = splitStitch[1].substring(instructionStart + 1, instructionEnd);
+              } else {
+                stitchCount = parseInt(splitStitch[1], 10);
+              }
+            }
+  
             for (let i = 0; i < stitchCount; i++) {
-              stitchArray.push({ name: stitchType, value: 1, complete: false });
+              stitchArray.push({ name: stitchType, value: 1, instruction, complete: false });
             }
           });
           return stitchArray;
@@ -91,6 +110,7 @@ function CrochetPatternGenerator() {
     null,
     2
   );
+  
   
   
 
