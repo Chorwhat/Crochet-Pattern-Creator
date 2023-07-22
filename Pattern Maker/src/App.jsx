@@ -1,10 +1,11 @@
 import React, { useState } from "react";
 import Section from "./Section";
-import Row from "./Row";
+
 
 function CrochetPatternGenerator() {
   const [sections, setSections] = useState([{ title: "", rows: [{ stitches: "" }] }]);
   const [editingRow, setEditingRow] = useState(null);
+  const [savedJson, setSavedJson] = useState(null);
 
   const handleAddSectionClick = () => {
     setSections([...sections, { title: "", rows: [{ stitches: "" }] }]);
@@ -57,23 +58,7 @@ const handleSaveRowClick = () => {
   // Replace the stitches string with the new array
   row.stitches = splitStitches;
 
-  setSections(newSections);
-  setEditingRow(null);
-};
-  
-  
-  
-
-  const handleSectionTitleChange = (event, sectionIndex) => {
-    const newSections = [...sections];
-    newSections[sectionIndex].title = event.target.value;
-    setSections(newSections);
-  };
-
-
-
-
-  const outputJson = JSON.stringify(
+  setSavedJson(JSON.stringify(
     {
       sections: sections.map(({ title, rows }) => ({
         title,
@@ -109,11 +94,28 @@ const handleSaveRowClick = () => {
     },
     null,
     2
-  );
+  ));
+
+  setSections(newSections);
+  setEditingRow(null);
+};
   
   
   
 
+  const handleSectionTitleChange = (event, sectionIndex) => {
+    const newSections = [...sections];
+    newSections[sectionIndex].title = event.target.value;
+    setSections(newSections);
+  };
+
+
+
+
+
+  
+
+  const outputJson = savedJson || JSON.stringify({ sections: [] }, null, 2);
   const outputFormatted = outputJson.replace(/},/g, "},\n").replace(/],/g, "],\n");
 
 
