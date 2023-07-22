@@ -31,6 +31,45 @@ function CrochetPatternGenerator() {
       setEditingRow(null);
     }
     setSections(newSections);
+
+    setSavedJson(JSON.stringify(
+      {
+        sections: sections.map(({ title, rows }) => ({
+          title,
+          rows: rows.map(({ stitches }) => {
+            const stitchArray = [];
+            const splitStitches = stitches.split(",");
+    
+            splitStitches.forEach((stitch) => {
+              const splitStitch = stitch.split("*");
+              const stitchType = splitStitch[0];
+              let stitchCount = 1; // Default to 1 if no stitch count is provided
+              let instruction = "";
+    
+              if (splitStitch.length > 1) {
+                // Check for presence of instruction in square brackets
+                const instructionStart = splitStitch[1].indexOf("[");
+                if (instructionStart !== -1) {
+                  stitchCount = parseInt(splitStitch[1].substring(0, instructionStart), 10);
+                  const instructionEnd = splitStitch[1].indexOf("]");
+                  instruction = splitStitch[1].substring(instructionStart + 1, instructionEnd);
+                } else {
+                  stitchCount = parseInt(splitStitch[1], 10);
+                }
+              }
+    
+              for (let i = 0; i < stitchCount; i++) {
+                stitchArray.push({ name: stitchType, value: 1, instruction, complete: false });
+              }
+            });
+            return stitchArray;
+          }),
+        })),
+      },
+      null,
+      2
+    )
+    )
   };
 
   const handleEditRowClick = (sectionIndex, rowIndex) => {
