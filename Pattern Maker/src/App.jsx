@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import Section from "./Section";
 
-// Helper function to generate the stitch array for a given stitches string
 const generateStitchArray = (stitches) => {
   const stitchArray = [];
   const splitStitches = stitches.split(",");
@@ -42,7 +41,22 @@ function CrochetPatternGenerator() {
   };
 
   const handleRemoveSectionClick = (indexToRemove) => {
-    setSections(sections.filter((section, index) => index !== indexToRemove));
+    const newSections = sections.filter((section, index) => index !== indexToRemove);
+    setSections(newSections);
+
+    const newJson = JSON.stringify(
+      {
+        sections: newSections.map(({ title, rows }) => ({
+          title,
+          rows: rows.map(({ stitches }) => stitches),
+        })),
+      },
+      null,
+      2
+    );
+
+    setSavedJson(newJson);
+
     if (editingRow?.section === indexToRemove) {
       setEditingRow(null);
     }
@@ -57,12 +71,8 @@ function CrochetPatternGenerator() {
   const handleRemoveRowClick = (sectionIndex, rowIndex) => {
     const newSections = [...sections];
     newSections[sectionIndex].rows = newSections[sectionIndex].rows.filter((row, index) => index !== rowIndex);
-    if (editingRow?.section === sectionIndex && editingRow?.row === rowIndex) {
-      setEditingRow(null);
-    }
     setSections(newSections);
 
-    // Recalculate the JSON representation after removing the row using the newSections variable
     const newJson = JSON.stringify(
       {
         sections: newSections.map(({ title, rows }) => ({
@@ -75,6 +85,10 @@ function CrochetPatternGenerator() {
     );
 
     setSavedJson(newJson);
+
+    if (editingRow?.section === sectionIndex && editingRow?.row === rowIndex) {
+      setEditingRow(null);
+    }
   };
 
   const handleEditRowClick = (sectionIndex, rowIndex) => {
@@ -91,21 +105,31 @@ function CrochetPatternGenerator() {
     const newSections = [...sections];
     const { section: sectionIndex, row: rowIndex } = editingRow;
     const row = newSections[sectionIndex].rows[rowIndex];
-  
+
+    // Split the stitches string into an array using the generateStitchArray function
+    const splitStitches = Array.isArray(row.stitches) ? row.stitches.join(",") : row.stitches;
+    const stitchArray = generateStitchArray(splitStitches);
+
+    // Create a new row object with the generated stitchArray
+    const newRow = { ...row, stitches: stitchArray };
+
+    // Update the rows array with the modified newRow
+    newSections[sectionIndex].rows[rowIndex] = newRow;
+
     // Update the savedJson state using the newSections variable
     const newJson = JSON.stringify(
       {
         sections: newSections.map(({ title, rows }) => ({
           title,
-          rows: rows.map(({ stitches }) => (stitches === row.stitches ? generateStitchArray(stitches) : stitches)),
+          rows: rows.map((r) => r.stitches), // Use the generated stitchArray for output JSON
         })),
       },
       null,
       2
     );
-  
+
     setSavedJson(newJson);
-  
+
     setSections(newSections);
     setEditingRow(null);
   };
