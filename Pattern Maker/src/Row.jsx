@@ -1,12 +1,12 @@
 import React from "react";
 
 function Row(props) {
-  const { row, sectionIndex, rowIndex, handleRowInputChange, handleEditRowClick, handleSaveRowClick, editingRow } = props;
+  const { row, sectionIndex, rowIndex, editingRow, handleRowInputChange, handleSaveRowClick, handleEditRowClick, handleRemoveRowClick } = props;
 
   return (
     <div>
       <label>
-        Stitches:
+        Row {rowIndex + 1}:
         <input
           type="text"
           value={row.stitches}

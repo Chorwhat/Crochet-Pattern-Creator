@@ -1,4 +1,5 @@
 import React from "react";
+import Row from "./Row";
 
 function Section(props) {
   const {
@@ -26,23 +27,17 @@ function Section(props) {
       </label>
       <form onSubmit={(e) => e.preventDefault()}>
         {section.rows.map((row, rowIndex) => (
-          <div key={rowIndex}>
-            <label>
-              Row {rowIndex + 1}: 
-              <input
-                type="text"
-                value={row.stitches}
-                onChange={(e) => handleRowInputChange(e, sectionIndex, rowIndex)}
-                readOnly={editingRow?.section !== sectionIndex || editingRow?.row !== rowIndex}
-              />
-            </label>
-            {editingRow?.section === sectionIndex && editingRow?.row === rowIndex ? (
-              <button onClick={handleSaveRowClick}>Save</button>
-            ) : (
-              <button onClick={() => handleEditRowClick(sectionIndex, rowIndex)}>Edit</button>
-            )}
-            <button onClick={() => handleRemoveRowClick(sectionIndex, rowIndex)}>Remove</button>
-          </div>
+          <Row
+            key={rowIndex}
+            row={row}
+            sectionIndex={sectionIndex}
+            rowIndex={rowIndex}
+            editingRow={editingRow}
+            handleRowInputChange={handleRowInputChange}
+            handleSaveRowClick={handleSaveRowClick}
+            handleEditRowClick={handleEditRowClick}
+            handleRemoveRowClick={handleRemoveRowClick}
+          />
         ))}
       </form>
       <button onClick={() => handleAddRowClick(sectionIndex)}>Add Row</button>

@@ -109,6 +109,7 @@ function CrochetPatternGenerator() {
     // Split the stitches string into an array using the generateStitchArray function
     const splitStitches = Array.isArray(row.stitches) ? row.stitches.join(",") : row.stitches;
     const stitchArray = generateStitchArray(splitStitches);
+    console.log("starting: " + splitStitches)
 
     // Create a new row object with the generated stitchArray
     const newRow = { ...row, stitches: stitchArray };
@@ -132,6 +133,8 @@ function CrochetPatternGenerator() {
 
     setSections(newSections);
     setEditingRow(null);
+
+    console.log("ending: " + newRow.stitches)
   };
 
   const handleSectionTitleChange = (event, sectionIndex) => {
